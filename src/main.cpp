@@ -28,8 +28,7 @@ RPI_PICO_Timer stepperTimer(2);
 RPI_PICO_Timer otherTimer(3);
 
 // Global Variables
-bool fastFlash = true;
-bool fastFlash2 = true;
+bool fastFlash = false;
 bool LED_state = false;
 bool direction = true;
 bool lastStepState = 0;
@@ -54,7 +53,7 @@ bool stepper_movement_callback(struct repeating_timer *t) {
 }
 // Other timer callback (currently used for switching blink speed and stepper direction)
 bool other_timer_callback(struct repeating_timer *t) {
-    fastFlash2 = !fastFlash2;
+    fastFlash = !fastFlash;
     return true;
 }
 
@@ -97,22 +96,25 @@ void setup() {
     otherTimer.attachInterruptInterval(OTHER_TIMER_MS * 1000, other_timer_callback);
 }
 void loop() {
-    delay(5000);  // Wait 5 seconds before switching
-    if (fastFlash) {
+    // delay(5000);  // Wait 5 seconds before switching
+    static bool wasFastFlash = false;
+
+    if (fastFlash and !wasFastFlash) {
         // Stop slow flash and start fast flash
         driver.shaft(true);
         slowFlashTimer.stopTimer();
         fastFlashTimer.restartTimer();
+        wasFastFlash = fastFlash;
         Serial.println("Fast flash. Timer0 disabled Timer1 enabled");
-    } else {
+    } else if (!fastFlash and wasFastFlash) {
         // Stop fast flash and start slow flash
         driver.shaft(false);
         fastFlashTimer.stopTimer();
         slowFlashTimer.restartTimer();
+        wasFastFlash = fastFlash;
         Serial.println("Slow flash. Timer1 disabled Timer0 enabled");
     }
-    // Switch flashing mode
-    fastFlash = !fastFlash;
+    
 }
 
 // Handling the timers happens on core1
