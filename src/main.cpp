@@ -111,7 +111,7 @@ void loop() {
         slowFlashTimer.restartTimer();
         Serial.println("Slow flash. Timer1 disabled Timer0 enabled");
     }
-    // Hello there
+    // Switch flashing mode
     fastFlash = !fastFlash;
 }
 
