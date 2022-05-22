@@ -96,7 +96,6 @@ void setup() {
     otherTimer.attachInterruptInterval(OTHER_TIMER_MS * 1000, other_timer_callback);
 }
 void loop() {
-    // delay(5000);  // Wait 5 seconds before switching
     static bool wasFastFlash = false;
 
     if (fastFlash and !wasFastFlash) {
@@ -114,7 +113,7 @@ void loop() {
         wasFastFlash = fastFlash;
         Serial.println("Slow flash. Timer1 disabled Timer0 enabled");
     }
-    
+
 }
 
 // Handling the timers happens on core1
